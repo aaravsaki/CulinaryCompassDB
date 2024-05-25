@@ -86,6 +86,10 @@ def create_user(user: User):
     queries.execute_insert_statement(USER_TABLE, ['username'], [user.username])
     return user
 
+@app.get("/month/")
+def get_month(username: str, month: int):
+    return queries.get_month(username, month)
+
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
     data = fooditem.model_dump()
@@ -97,4 +101,6 @@ def create_meal(meal: Meal):
     data = meal.model_dump()
     queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
     return meal
+
+
     
