@@ -19,8 +19,7 @@ def execute_get(tablename: str, attr_name: str, pid: int):
 
 def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'username': user, 'month': mon}).execute()
-    for meal in response.data:
-        return {meal["mealname"] : {"date" : meal["date"], "fooditems": meal["fooditems"]}}
+    return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
 
 
 
