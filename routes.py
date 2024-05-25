@@ -86,7 +86,7 @@ class MonthSchedule(BaseModel):
 class DaySchedule(BaseModel):
     username: str
     
-    day: str
+    day: str = Field(default=f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
 
 class MealFoodAssociation(BaseModel):
     meal_id: int

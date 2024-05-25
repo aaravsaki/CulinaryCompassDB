@@ -1,5 +1,6 @@
 import init
 import mail
+from datetime import datetime
 
 supabase = init.get_client()
 
@@ -11,9 +12,11 @@ def execute_insert_statement(tablename: str, columns: list[str], values: list[st
 def insert_email(key: str, io_mail: str):
     if mail.verify_email(key, io_mail):
         if len(execute_get("email", "mail", io_mail)) == 0:
-            d_prob = mail.get_component("temp", io_mail, ["DeliverabilityConfidenceScore"])[0]
-            execute_insert_statement("email", ["mail", "delivery_prob"], [io_mail, d_prob])
-            print("insertion is successful")
+            d_prob = mail.get_component("temp", io_mail, ["DeliverabilityConfidenceScore"])
+            if d_prob:
+                d_prob = d_prob[0]
+                execute_insert_statement("email", ["mail", "delivery_prob"], [io_mail, d_prob])
+                print("insertion is successful")
         else:
             print("email already exists")
     else:
