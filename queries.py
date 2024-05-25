@@ -32,18 +32,20 @@ def execute_get(tablename: str, attr_name: str, val):
     response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
     return response.data
 
+def get_day(user: str, day: str):
+    response = supabase.rpc(f"get_day_schedule", {'username': user, 'day': day}).execute()
+    data = dict()
+    for meal in response.data:
+        data[meal["mealname"]] = {
+            "date" : meal["date"][:meal["date"].index('T')], 
+            "fooditems": meal["fooditems"], 
+            "time": meal["date"][meal["date"].index('T')+1:]
+        }
+    return data
+
 def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'username': user, 'month': mon}).execute()
     return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
 
-#insert_email("validEmail1", "brandonhoang7541@gmail.com")
-#insert_email("invalidEmail", "brandonbradom@uci.edu")
-#insert_email("InvalidEmail", "sklsdaghsajhgasja@gmail.com")
-#print(execute_get("meal", "name", "lunch"))
-#print(execute_get("person", "username", "Brandon"))
-#print(execute_get("meal_has", "meal_id", 1))
-#print(execute_get("fooditem", "item_id", 2))
-#print(execute_get("email", "mail", "brandonbradom@uci.edu"))
-#insert_email("SHouldbevalid", "asaki@uci.edu")
 
 

@@ -78,10 +78,20 @@ class Meal(BaseModel):
 
     date: datetime
 
-class UserSchedule(BaseModel):
+class MonthSchedule(BaseModel):
     username: str
 
     month: int
+
+class DaySchedule(BaseModel):
+    username: str
+    
+    day: str
+
+class MealFoodAssociation(BaseModel):
+    meal_id: int
+
+    food_id: int
 
 @app.get("/verify/")
 def verify(username: str):
@@ -93,9 +103,14 @@ def create_user(user: User):
     return user
 
 @app.post("/month/")
-def get_month(schedule: UserSchedule):
+def get_month(schedule: MonthSchedule):
     data = schedule.model_dump()
     return queries.get_month(data["username"], data["month"])
+
+@app.post("/day/")
+def get_day(schedule: DaySchedule):
+    data = schedule.model_dump()
+    return queries.get_day(data["username"], data["month"])
 
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
@@ -108,6 +123,13 @@ def create_meal(meal: Meal):
     data = meal.model_dump()
     queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
     return meal
+
+@app.post("/create/meal_has/")
+def create_meal_food_assoc(association: MealFoodAssociation):
+    data = association.model_dump()
+    queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+
+
 
 
     

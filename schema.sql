@@ -54,3 +54,25 @@ CREATE TABLE meal_has(
   PRIMARY KEY (meal_id, food_id)
 );
 
+CREATE OR REPLACE FUNCTION get_month_schedule(user_name text, month integer)
+RETURNS table(mealname text, date timestamp, fooditems text[]) AS
+$$
+  SELECT m.name, m.date, array_agg(f.name) fooditems FROM meal m
+    INNER JOIN meal_has mh ON mh.meal_id = m.meal_id
+    INNER JOIN fooditem f ON f.item_id = mh.food_id
+  WHERE EXTRACT(MONTH FROM m.date) = month
+  GROUP BY m.user_id, m.name, m.date
+  HAVING m.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
+$$ language sql;
+
+CREATE OR REPLACE FUNCTION get_day_schedule(user_name text, day text)
+RETURNS table(mealname text, date timestamp, fooditems text[]) AS
+$$
+  SELECT m.name, m.date, array_agg(f.name) fooditems FROM meal m
+    INNER JOIN meal_has mh ON mh.meal_id = m.meal_id
+    INNER JOIN fooditem f ON f.item_id = mh.food_id
+  WHERE DATE(m.date) = day::date
+  GROUP BY m.user_id, m.name, m.date
+  HAVING m.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
+$$ language sql;
+
