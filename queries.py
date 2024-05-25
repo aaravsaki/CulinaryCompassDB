@@ -9,7 +9,6 @@ def execute_insert_statement(tablename: str, columns: list[str], values: list[st
     supabase.table(tablename).upsert(data).execute()
 
 def insert_email(key: str, io_mail: str):
-    print(f"for {io_mail}: verification is {mail.verify_email(key, io_mail)} and current data is {len(execute_get("email", "mail", io_mail))}")
     if mail.verify_email(key, io_mail):
         if len(execute_get("email", "mail", io_mail)) == 0:
             d_prob = mail.get_component("temp", io_mail, ["DeliverabilityConfidenceScore"])[0]
