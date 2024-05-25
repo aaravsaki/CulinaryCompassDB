@@ -110,7 +110,7 @@ def get_month(schedule: MonthSchedule):
 @app.post("/day/")
 def get_day(schedule: DaySchedule):
     data = schedule.model_dump()
-    return queries.get_day(data["username"], data["month"])
+    return queries.get_day(data["username"], data["day"])
 
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
