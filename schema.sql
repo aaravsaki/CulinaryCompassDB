@@ -10,6 +10,7 @@ CREATE TABLE person(
 
 CREATE TABLE email(
   mail text PRIMARY KEY
+  delivery_prob integer
 );
 
 CREATE TABLE meal(

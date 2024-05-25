@@ -5,10 +5,9 @@ import json
 
 LICENSE_KEY = "Xx5BkbONBbOxPtIfCzTp7j**nSAcwXpxhQ0PC2lXxuDAZ-**"
 URL = "https://globalemail.melissadata.net/v4/WEB/GlobalEmail/doGlobalEmail"
-OPT = "VerifyMailBox:Express,DomainCorrection:off,TimeToWait:30,WhoIs:off"
+#OPT = "VerifyMailBox:Express,DomainCorrection:off,TimeToWait:30,WhoIs:off"
 
-def verify_email(key: str, mail: str,*, mailbox: str = "Express", dc: str = "off", wait: int = 30, whoIs: str = "off", format: str = "json"):
-
+def get_all(key: str, mail: str, *, mailbox: str = "Express", dc: str = "off", wait: int = 30, whoIs: str = "off", format: str = "json") -> str:
     params = urllib.parse.urlencode([('t', key), ('id', LICENSE_KEY), 
                                      ('opt', f"VerifyMailBox:{mailbox}, DomainCorrection:{dc}, TimeToWait:{wait}, whoIs:{whoIs}"),
                                     ('email', mail), ("format", format)])
@@ -22,12 +21,36 @@ def verify_email(key: str, mail: str,*, mailbox: str = "Express", dc: str = "off
     text = data.decode(encoding = 'utf-8')
     result = json.loads(text)
 
-    validity = "ES01" in result["Records"][0]["Results"]
-    return validity
+    return result
+
+def get_component(key: str, mail: str, information: list[str]):
+    data = get_all(key, mail)
+    result = []
+
+    if len(data["Records"]) == 0:
+        return None
+    
+    for info in information:
+        result.append(data["Records"][0][info])
+
+    return result
+
+    
+def verify_email(key: str, mail: str):   
+    data = get_component(key, mail, ["Results", "DeliverabilityConfidenceScore"])
+
+    if data == None:
+        return False
+
+    validity = "ES01" in data[0]
+    delivery_score = data[1]
+    return validity and int(delivery_score) > 70
+
 
 
 #print(verify_email("testingvalid", "brandonhoang7541@gmail.com"))
 #print(verify_email("testinginvalid", "dasjkhsgkalhj@jljghsl.com"))
+#print(verify_email("INVALID1", "brandonbradom@uci.edu"))
 
 # Formatting Reference of search return
 
