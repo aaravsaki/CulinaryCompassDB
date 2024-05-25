@@ -11,6 +11,7 @@ FOODITEM_TABLE = 'fooditem'
 HAS_TABLE = 'meal_has'
 
 origins = [
+    "http://localhost:5173"
     # Eventually put front-end url here
 ]
 
@@ -77,6 +78,11 @@ class Meal(BaseModel):
 
     date: datetime
 
+class UserSchedule(BaseModel):
+    username: str
+
+    month: int
+
 @app.get("/verify/")
 def verify(username: str):
     return {"exists": queries.verify_id(username)}
@@ -85,6 +91,11 @@ def verify(username: str):
 def create_user(user: User):
     queries.execute_insert_statement(USER_TABLE, ['username'], [user.username])
     return user
+
+@app.post("/month/")
+def get_month(schedule: UserSchedule):
+    data = schedule.model_dump()
+    return queries.get_month(data["username"], data["month"])
 
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
@@ -97,4 +108,6 @@ def create_meal(meal: Meal):
     data = meal.model_dump()
     queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
     return meal
+
+
     
