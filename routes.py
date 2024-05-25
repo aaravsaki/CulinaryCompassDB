@@ -88,6 +88,11 @@ class DaySchedule(BaseModel):
     
     day: str
 
+class MealFoodAssociation(BaseModel):
+    meal_id: int
+
+    food_id: int
+
 @app.get("/verify/")
 def verify(username: str):
     return {"exists": queries.verify_id(username)}
@@ -119,6 +124,10 @@ def create_meal(meal: Meal):
     queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
     return meal
 
+@app.post("/create/meal_has/")
+def create_meal_food_assoc(association: MealFoodAssociation):
+    data = association.model_dump()
+    queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
 
 
 
