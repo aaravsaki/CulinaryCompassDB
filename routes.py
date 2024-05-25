@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 import queries
-import queries2
 
 USER_TABLE = 'user'
 MEAL_TABLE = 'meal'
@@ -70,10 +70,16 @@ class FoodItem(BaseModel):
 
     selenium: int = Field(default=0)
 
+class Meal(BaseModel):
+    name: str
+
+    user_id: int
+
+    date: datetime
 
 @app.get("/verify/")
 def verify(username: str):
-    return {"exists": queries2.verify_id(username)}
+    return {"exists": queries.verify_id(username)}
 
 @app.post("/register/")
 def create_user(user: User):
@@ -84,5 +90,11 @@ def create_user(user: User):
 def create_fooditem(fooditem: FoodItem):
     data = fooditem.model_dump()
     queries.execute_insert_statement(FOODITEM_TABLE, list(data.keys()), list(data.values()))
+    return fooditem
 
+@app.post("/create/meal/")
+def create_meal(meal: Meal):
+    data = meal.model_dump()
+    queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
+    return meal
     
