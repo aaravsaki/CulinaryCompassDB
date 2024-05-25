@@ -17,9 +17,19 @@ def execute_get(tablename: str, attr_name: str, pid: int):
     response = supabase.table(tablename).select("*").eq(attr_name, pid).execute()
     return response.data
 
+def get_day(user: str, day: str):
+    response = supabase.rpc(f"get_day_schedule", {'username': user, 'day': day}).execute()
+    data = dict()
+    for meal in response.data:
+        data[meal["mealname"]] = {
+            "date" : meal["date"][:meal["date"].index('T')], 
+            "fooditems": meal["fooditems"], 
+            "time": meal["date"][meal["date"].index('T')+1:]
+        }
+    return data
+
 def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'username': user, 'month': mon}).execute()
     return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
-
 
 
