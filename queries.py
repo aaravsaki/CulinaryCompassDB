@@ -53,7 +53,7 @@ def get_day(user: str, day: str):
     response = supabase.rpc(f"get_day_schedule", {'user_name': user, 'day': day}).execute()
     data = dict()
     for meal in response.data:
-        if data[meal["mealname"]]:
+        if meal["mealname"]:
             data[meal["mealname"]] = {
                 "date" : meal["date"][:meal["date"].index('T')], 
                 "fooditems": [],
@@ -84,4 +84,5 @@ def delete_meal(tablename: str, meal_id: int):
 def get_meal_ids(date: str, meal_name: str, username: str):
     meal_ids = supabase.rpc("get_meal_ids", {'user_name': username, 'meal_name': meal_name, 'day': date}).execute()
     return meal_ids.data
+
 
