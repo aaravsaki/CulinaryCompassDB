@@ -36,6 +36,10 @@ def get_userid(tablename: str, username: str):
     response = supabase.table(tablename).select("user_id").eq("username", username).execute()
     return response.data[0]["user_id"]
 
+def get_fooditem_id(user_name: str, food_name: str):
+    fooditem_ids = supabase.rpc("get_item_ids", {"user_name": user_name, "food_name": food_name}).execute()
+    return fooditem_ids.data
+
 def delete_user(tablename: str, user_name: str):
     supabase.table(tablename).delete().eq('username', user_name).execute()
 
@@ -61,5 +65,6 @@ def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'user_name': user, 'month': mon}).execute()
     return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
 
-
+def delete_fooditem(tablename: str, fooditem_id: int):
+    supabase.table(tablename).delete().eq("item_id", fooditem_id).execute()
 
