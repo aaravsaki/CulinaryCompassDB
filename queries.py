@@ -12,7 +12,7 @@ def execute_insert_statement(tablename: str, columns: list[str], values: list):
 def insert_email(key: str, io_mail: str):
     if mail.verify_email(key, io_mail):
         if len(execute_get("email", "mail", io_mail)) == 0:
-            d_prob = mail.get_component("temp", io_mail, ["DeliverabilityConfidenceScore"])
+            d_prob = mail._get_component("temp", io_mail, ["DeliverabilityConfidenceScore"])
             if d_prob:
                 d_prob = d_prob[0]
                 execute_insert_statement("email", ["mail", "delivery_prob"], [io_mail, d_prob])
