@@ -47,3 +47,5 @@ def _send(emails: list[dict]):
 def main():
     receivers = queries.execute_get("email", "mail")
     _send(receivers)
+
+main()

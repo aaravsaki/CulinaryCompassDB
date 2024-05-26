@@ -11,7 +11,8 @@ MEALHAS_TABLE = 'meal_has'
 PERSONHAS_TABLE = 'person_fooditem'
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:5174"
     # Eventually put front-end url here
 ]
 
