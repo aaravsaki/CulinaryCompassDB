@@ -113,7 +113,11 @@ class ItemDeletion(BaseModel):
 
 class AllItemRequest(BaseModel):
     user: str
-    
+   
+class ItemIdRequest(BaseModel):
+    user: str
+
+    food_name: str
 
 
 
@@ -196,5 +200,5 @@ def get_allfooditems(request: AllItemRequest):
 
 
 @app.post("/fooditem_id/")
-def get_fooditem_id(user: str, food_name: str):
-    return queries.get_fooditem_id(user, food_name)
+def get_fooditem_id(request: ItemIdRequest):
+    return queries.get_fooditem_id(request.user, request.food_name)
