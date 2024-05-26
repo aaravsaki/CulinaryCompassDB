@@ -154,7 +154,7 @@ def create_meal_food_assoc(association: MealFoodAssociation):
 
 @app.post("/create/email/")
 def create_email(io_mail: Email):
-    queries.insert_email("404", io_mail)
+    queries.insert_email("404", io_mail.mail)
 
 @app.post("/delete/user/")
 def delete_user(user: User):
