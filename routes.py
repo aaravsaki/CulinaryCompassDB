@@ -95,6 +95,14 @@ class MealFoodAssociation(BaseModel):
 
     food_id: int
 
+
+class MealDeletion(BaseModel):
+    username: str
+
+    date: str
+
+    name: str
+
 class ItemDeletion(BaseModel):
     username: str
 
@@ -157,7 +165,9 @@ def delete_fooditem(delete_request: ItemDeletion):
         fooditem_id = fooditem["item_id"]
         queries.delete_fooditem(FOODITEM_TABLE, fooditem_id)
 
-
+@app.post("/delete/meal/")
+def delete_meal(delete_request: MealDeletion):
+    pass
 
 
 
