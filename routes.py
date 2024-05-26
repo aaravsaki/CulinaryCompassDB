@@ -178,7 +178,14 @@ def delete_meal(delete_request: MealDeletion):
 
 @app.post("/all_fooditems/")
 def get_allfooditems(user: str):
-    return queries.get_all_fooditems(user)
+    data = queries.get_all_fooditems(user)
+    new_data = dict()
+    for obj in data:
+        name = obj["name"]
+        del obj["name"]
+        new_data[name] = obj
+    return new_data
+
 
 @app.post("/fooditem_id/")
 def get_fooditem_id(user: str, food_name: str):
