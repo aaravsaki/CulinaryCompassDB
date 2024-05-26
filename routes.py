@@ -115,21 +115,25 @@ def get_day(schedule: DaySchedule):
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
     data = fooditem.model_dump()
-    queries.execute_insert_statement(FOODITEM_TABLE, list(data.keys()), list(data.values()))
-    return fooditem
+    response = queries.execute_insert_statement(FOODITEM_TABLE, list(data.keys()), list(data.values()))
+    return {"item_id": response.data[0]["item_id"]}
 
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
     data = meal.model_dump()
-    queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
-    return meal
+    response = queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
+    return {"meal_id": response.data[0]["meal_id"]}
 
 @app.post("/create/meal_has/")
 def create_meal_food_assoc(association: MealFoodAssociation):
     data = association.model_dump()
-    queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+    response = queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+    return response
 
-
+@app.post("/delete/user/")
+def delete_user(user: User):
+    queries.delete_user(USER_TABLE, user.username)
+    return
 
 
     

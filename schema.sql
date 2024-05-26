@@ -76,3 +76,12 @@ $$
   HAVING m.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
 $$ language sql;
 
+CREATE OR REPLACE FUNCTION get_nutrition_info(user_name text, food_item text)
+RETURNS json as
+$$
+  SELECT json_agg(f) FROM fooditem f
+    INNER JOIN person_fooditem pf ON pf.food_id = f.item_id
+    WHERE f.name = food_item
+    GROUP BY pf.user_id, f.name
+    HAVING pf.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
+$$ language sql;

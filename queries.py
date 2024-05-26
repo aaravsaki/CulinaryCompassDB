@@ -1,13 +1,12 @@
 import init
 import mail
-from datetime import datetime
 
 supabase = init.get_client()
 
 # generic insert statement execution
 def execute_insert_statement(tablename: str, columns: list[str], values: list[str]):
     data = {col: val for col, val in zip(columns, values)}
-    supabase.table(tablename).upsert(data).execute()
+    return supabase.table(tablename).insert(data).execute()
 
 def insert_email(key: str, io_mail: str):
     if mail.verify_email(key, io_mail):
@@ -22,7 +21,6 @@ def insert_email(key: str, io_mail: str):
     else:
         print("Invalid email")
     print()
-    
 
 # verifies that the user id exists in the database
 def verify_id(name: str) -> bool:
@@ -33,6 +31,9 @@ def verify_id(name: str) -> bool:
 def execute_get(tablename: str, attr_name: str, val):
     response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
     return response.data
+
+def delete_user(tablename: str, user_name: str):
+    supabase.table(tablename).delete().eq('username', user_name).execute()
 
 def get_day(user: str, day: str):
     response = supabase.rpc(f"get_day_schedule", {'user_name': user, 'day': day}).execute()
