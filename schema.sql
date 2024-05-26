@@ -79,9 +79,9 @@ CREATE OR REPLACE FUNCTION get_day_schedule(user_name text, day text)
 RETURNS table(mealname text, date timestamp, fooditems text[]) AS
 $$
   SELECT m.name, m.date, array_agg(f.name) fooditems FROM meal m
-    INNER JOIN meal_has mh ON mh.meal_id = m.meal_id
-    INNER JOIN fooditem f ON f.item_id = mh.food_id
-  WHERE DATE(m.date) = day::date
+    LEFT OUTER JOIN meal_has mh ON mh.meal_id = m.meal_id
+    LEFT OUTER JOIN fooditem f ON f.item_id = mh.food_id
+  WHERE DATE(m.date) = TO_DATE(day, 'YYYY-MM-DD')
   GROUP BY m.user_id, m.name, m.date
   HAVING m.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
 $$ language sql;
@@ -95,3 +95,12 @@ $$
     GROUP BY pf.user_id, f.name
     HAVING pf.user_id = (SELECT user_id FROM person p WHERE p.username = user_name)
 $$ language sql;
+
+CREATE OR REPLACE FUNCTION get_item_ids(user_name text, food_name text)
+RETURNS table(item_id integer) AS
+$$
+  SELECT item_id FROM fooditem f
+    INNER JOIN person_fooditem pf ON f.item_id = pf.food_id
+  WHERE f.name LIKE food_name AND pf.user_id = (SELECT user_id FROM person WHERE username = user_name)
+$$ language sql;
+
