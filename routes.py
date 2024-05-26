@@ -124,7 +124,8 @@ def create_fooditem(fooditem: FoodItem):
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
     meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date'], [meal.name, meal.date]).data[0]["meal_id"]
-    user_id = queries.get_userid(USER_TABLE, meal.username)
+    user_id = int(queries.get_userid(USER_TABLE, meal.username))
+    print(user_id)
 
     for fooditem_id, occurrences in meal.frequency.items():
         queries.execute_insert_statement(MEALHAS_TABLE, ['meal_id', 'food_id', 'amount'], [meal_id, fooditem_id, occurrences])
