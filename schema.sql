@@ -111,3 +111,14 @@ $$
   WHERE m.name = meal_name AND m.user_id = (SELECT user_id FROM person WHERE username = user_name)
   AND DATE(m.date) = TO_DATE(day, 'YYYY-MM-DD');
 $$ language sql;
+
+CREATE OR REPLACE FUNCTION get_nutrition_summary(user_name text, day text)
+RETURNS table(calories integer, protein integer, fat integer, carbs integer) AS
+$$
+SELECT SUM(f.calories), SUM(f.protein), SUM(f.fat), SUM(f.carbs) FROM fooditem f
+  INNER JOIN person_fooditem pf ON f.item_id = pf.food_id
+  INNER JOIN person p ON p.user_id = (SELECT user_id FROM person WHERE person.username = user_name)
+  INNER JOIN meal_has mh ON mh.food_id = f.item_id
+  INNER JOIN meal m ON m.meal_id = mh.meal_id
+WHERE DATE(m.date) = TO_DATE(day, 'YYYY-MM-DD')
+$$ language sql;

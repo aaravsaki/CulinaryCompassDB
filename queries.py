@@ -66,6 +66,8 @@ def get_day(user: str, day: str):
                     nutritional_info = nutritional_info.data[0]
                     del nutritional_info["item_id"]
                     data[meal["mealname"]]["fooditems"].append(nutritional_info)
+    
+    data = {"Summary" : {"date": day, "fooditems": [create_nutrition_summary(user, day)]}} | data
     return data
 
 def get_month(user: str, mon: int):
@@ -74,6 +76,11 @@ def get_month(user: str, mon: int):
     for meal in response.data:
         data[meal["date"][:meal["date"].index('T')]].append({meal["mealname"] : meal["fooditems"]})
     return data
+
+def create_nutrition_summary(user: str, day: str):
+    response = supabase.rpc("get_nutrition_summary", {"user_name": user, "day": day}).execute()
+    data_dict = {"name" : "Nutrition Summary"} | {k: v for d in response.data for k, v in d.items()}
+    return data_dict
 
 def delete_fooditem(tablename: str, fooditem_id: int):
     supabase.table(tablename).delete().eq("item_id", fooditem_id).execute()
