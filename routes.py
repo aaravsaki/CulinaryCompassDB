@@ -29,7 +29,6 @@ class User(BaseModel):
     username: str
 
 class FoodItem(BaseModel):
-    # TODO: Change default to None instead of 0
 
     name: str
 
