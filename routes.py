@@ -8,7 +8,8 @@ import queries
 USER_TABLE = 'person'
 MEAL_TABLE = 'meal'
 FOODITEM_TABLE = 'fooditem'
-HAS_TABLE = 'meal_has'
+MEALHAS_TABLE = 'meal_has'
+PERSONHAS_TABLE = 'person_fooditem'
 
 origins = [
     "http://localhost:5173"
@@ -74,9 +75,11 @@ class FoodItem(BaseModel):
 class Meal(BaseModel):
     name: str
 
-    user_id: int
+    frequency: dict[int, int]
 
-    date: datetime
+    username: str
+
+    date: str
 
 class MonthSchedule(BaseModel):
     username: str
@@ -120,20 +123,27 @@ def create_fooditem(fooditem: FoodItem):
 
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
-    data = meal.model_dump()
-    response = queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
-    return {"meal_id": response.data[0]["meal_id"]}
+    meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date'], [meal.name, meal.date]).data[0]["meal_id"]
+    user_id = queries.get_userid(USER_TABLE, meal.username)
+
+    for fooditem_id, occurrences in meal.frequency.items():
+        queries.execute_insert_statement(MEALHAS_TABLE, ['meal_id', 'food_id', 'amount'], [meal_id, fooditem_id, occurrences])
+        queries.execute_insert_statement(PERSONHAS_TABLE, ['food_id', 'user_id'], [fooditem_id, user_id])
+
+    return meal_id
 
 @app.post("/create/meal_has/")
 def create_meal_food_assoc(association: MealFoodAssociation):
     data = association.model_dump()
-    response = queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+    response = queries.execute_insert_statement(MEALHAS_TABLE, list(data.keys()), list(data.values()))
     return response
 
 @app.post("/delete/user/")
 def delete_user(user: User):
     queries.delete_user(USER_TABLE, user.username)
     return
+
+
 
 
     

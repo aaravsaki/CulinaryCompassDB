@@ -4,7 +4,7 @@ import mail
 supabase = init.get_client()
 
 # generic insert statement execution
-def execute_insert_statement(tablename: str, columns: list[str], values: list[str]):
+def execute_insert_statement(tablename: str, columns: list[str], values: list):
     data = {col: val for col, val in zip(columns, values)}
     return supabase.table(tablename).insert(data).execute()
 
@@ -31,6 +31,10 @@ def verify_id(name: str) -> bool:
 def execute_get(tablename: str, attr_name: str, val):
     response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
     return response.data
+
+def get_userid(tablename: str, username: str):
+    response = supabase.table(tablename).select("user_id").eq("username", username).execute()
+    return response.data[0]["user_id"]
 
 def delete_user(tablename: str, user_name: str):
     supabase.table(tablename).delete().eq('username', user_name).execute()
