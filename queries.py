@@ -92,4 +92,7 @@ def get_meal_ids(date: str, meal_name: str, username: str):
     meal_ids = supabase.rpc("get_meal_ids", {'user_name': username, 'meal_name': meal_name, 'day': date}).execute()
     return meal_ids.data
 
+def get_all_fooditems(username: str):
+    return supabase.rpc("all_fooditems", {'user_name': username}).execute()
+
 

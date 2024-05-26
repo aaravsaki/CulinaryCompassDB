@@ -175,3 +175,7 @@ def delete_meal(delete_request: MealDeletion):
         meal_id = meal["item_id"]
         queries.delete_meal(MEAL_TABLE, meal_id)
 
+@app.post("/all_fooditems/")
+def get_allfooditems(user: str):
+    return queries.get_all_fooditems(user)
+
