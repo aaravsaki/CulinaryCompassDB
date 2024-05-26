@@ -32,6 +32,10 @@ def execute_get(tablename: str, attr_name: str, val):
     response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
     return response.data
 
+def get_userid(tablename: str, username: str):
+    response = supabase.table(tablename).select("user_id").eq("username", username).execute()
+    return response.data[0]["user_id"]
+
 def delete_user(tablename: str, user_name: str):
     supabase.table(tablename).delete().eq('username', user_name).execute()
 

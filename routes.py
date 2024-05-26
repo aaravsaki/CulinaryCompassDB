@@ -75,9 +75,9 @@ class FoodItem(BaseModel):
 class Meal(BaseModel):
     name: str
 
-    item_occurrences: dict[int, int]
+    frequency: dict[int, int]
 
-    user_id: int
+    username: str
 
     date: datetime
 
@@ -123,10 +123,13 @@ def create_fooditem(fooditem: FoodItem):
 
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
-    meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name'], [meal.name])[0]["meal_id"]
-    for fooditem_id, occurrences in meal.item_occurrences.items():
+    meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date'], [meal.name, meal.date])[0]["meal_id"]
+    user_id = queries.get_userid(USER_TABLE, meal.username)
+
+    for fooditem_id, occurrences in meal.frequency.items():
         queries.execute_insert_statement(MEALHAS_TABLE, ['meal_id', 'food_id', 'amount'], [meal_id, fooditem_id, occurrences])
-        queries.execute_insert_statement(PERSONHAS_TABLE, ['food_id', 'user_id'], [fooditem_id, meal.user_id])
+        queries.execute_insert_statement(PERSONHAS_TABLE, ['food_id', 'user_id'], [fooditem_id, user_id])
+
     return meal_id
 
 @app.post("/create/meal_has/")
@@ -139,6 +142,8 @@ def create_meal_food_assoc(association: MealFoodAssociation):
 def delete_user(user: User):
     queries.delete_user(USER_TABLE, user.username)
     return
+
+
 
 
     
