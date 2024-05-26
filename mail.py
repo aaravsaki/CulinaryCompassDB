@@ -7,7 +7,7 @@ LICENSE_KEY = "Xx5BkbONBbOxPtIfCzTp7j**nSAcwXpxhQ0PC2lXxuDAZ-**"
 URL = "https://globalemail.melissadata.net/v4/WEB/GlobalEmail/doGlobalEmail"
 #OPT = "VerifyMailBox:Express,DomainCorrection:off,TimeToWait:30,WhoIs:off"
 
-def get_all(key: str, mail: str, *, mailbox: str = "Express", dc: str = "off", wait: int = 30, whoIs: str = "off", format: str = "json") -> str:
+def _get_all(key: str, mail: str, *, mailbox: str = "Express", dc: str = "off", wait: int = 30, whoIs: str = "off", format: str = "json") -> str:
     params = urllib.parse.urlencode([('t', key), ('id', LICENSE_KEY), 
                                      ('opt', f"VerifyMailBox:{mailbox}, DomainCorrection:{dc}, TimeToWait:{wait}, whoIs:{whoIs}"),
                                     ('email', mail), ("format", format)])
@@ -23,8 +23,8 @@ def get_all(key: str, mail: str, *, mailbox: str = "Express", dc: str = "off", w
 
     return result
 
-def get_component(key: str, mail: str, information: list[str]):
-    data = get_all(key, mail)
+def _get_component(key: str, mail: str, information: list[str]):
+    data = _get_all(key, mail)
     result = []
 
     if len(data["Records"]) == 0:
@@ -37,14 +37,14 @@ def get_component(key: str, mail: str, information: list[str]):
 
     
 def verify_email(key: str, mail: str):   
-    data = get_component(key, mail, ["Results", "DeliverabilityConfidenceScore"])
+    data = _get_component(key, mail, ["Results", "DeliverabilityConfidenceScore"])
 
     if data == None:
         return False
 
     validity = "ES01" in data[0]
     delivery_score = data[1]
-    return validity and int(delivery_score) > 70
+    return validity and int(delivery_score) > 25
 
 
 
