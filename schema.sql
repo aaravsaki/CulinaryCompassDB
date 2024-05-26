@@ -104,3 +104,10 @@ $$
   WHERE f.name LIKE food_name AND pf.user_id = (SELECT user_id FROM person WHERE username = user_name)
 $$ language sql;
 
+CREATE OR REPLACE FUNCTION get_meal_ids(user_name text, meal_name text, day text)
+RETURNS table(item_id integer) AS
+$$
+  SELECT meal_id FROM meal m
+  WHERE m.name = meal_name AND m.user_id = (SELECT user_id FROM person WHERE username = user_name)
+  AND DATE(m.date) = TO_DATE(day, 'YYYY-MM-DD');
+$$ language sql;

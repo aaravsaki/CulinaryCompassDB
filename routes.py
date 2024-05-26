@@ -138,10 +138,8 @@ def create_fooditem(fooditem: FoodItem):
 def create_meal(meal: Meal):
     user_id = int(queries.get_userid(USER_TABLE, meal.username))
     meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date', 'user_id'], [meal.name, meal.date, user_id]).data[0]["meal_id"]
-    print(user_id)
 
     for fooditem_id, occurrences in meal.frequency.items():
-
         queries.execute_insert_statement(MEALHAS_TABLE, ['meal_id', 'food_id', 'amount'], [meal_id, fooditem_id, occurrences])
         queries.execute_insert_statement(PERSONHAS_TABLE, ['food_id', 'user_id'], [fooditem_id, user_id])
 
@@ -167,9 +165,8 @@ def delete_fooditem(delete_request: ItemDeletion):
 
 @app.post("/delete/meal/")
 def delete_meal(delete_request: MealDeletion):
-    pass
+    meal_ids = queries.get_meal_ids(delete_request.date, delete_request.name, delete_request.username)
+    for meal in meal_ids:
+        meal_id = meal["item_id"]
+        queries.delete_meal(MEAL_TABLE, meal_id)
 
-
-
-
-    

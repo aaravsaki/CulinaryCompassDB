@@ -53,18 +53,19 @@ def get_day(user: str, day: str):
     response = supabase.rpc(f"get_day_schedule", {'user_name': user, 'day': day}).execute()
     data = dict()
     for meal in response.data:
-        data[meal["mealname"]] = {
-            "date" : meal["date"][:meal["date"].index('T')], 
-            "fooditems": [],
-            "time": meal["date"][meal["date"].index('T')+1:]
-        }
+        if data[meal["mealname"]]:
+            data[meal["mealname"]] = {
+                "date" : meal["date"][:meal["date"].index('T')], 
+                "fooditems": [],
+                "time": meal["date"][meal["date"].index('T')+1:]
+            }
 
-        for fooditem in meal["fooditems"]:
-            nutritional_info = supabase.rpc('get_nutrition_info', {'user_name': user, 'food_item': fooditem}).execute()
-            if nutritional_info.data is not None:
-                nutritional_info = nutritional_info.data[0]
-                del nutritional_info["item_id"]
-                data[meal["mealname"]]["fooditems"].append(nutritional_info)
+            for fooditem in meal["fooditems"]:
+                nutritional_info = supabase.rpc('get_nutrition_info', {'user_name': user, 'food_item': fooditem}).execute()
+                if nutritional_info.data is not None:
+                    nutritional_info = nutritional_info.data[0]
+                    del nutritional_info["item_id"]
+                    data[meal["mealname"]]["fooditems"].append(nutritional_info)
     return data
 
 def get_month(user: str, mon: int):
@@ -73,10 +74,14 @@ def get_month(user: str, mon: int):
     for meal in response.data:
         data[meal["date"][:meal["date"].index('T')]].append({meal["mealname"] : meal["fooditems"]})
     return data
-    
-
-    #return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
 
 def delete_fooditem(tablename: str, fooditem_id: int):
     supabase.table(tablename).delete().eq("item_id", fooditem_id).execute()
+
+def delete_meal(tablename: str, meal_id: int):
+    supabase.table(tablename).delete().eq("meal_id", meal_id).execute()
+
+def get_meal_ids(date: str, meal_name: str, username: str):
+    meal_ids = supabase.rpc("get_meal_ids", {'user_name': username, 'meal_name': meal_name, 'day': date}).execute()
+    return meal_ids.data
 
