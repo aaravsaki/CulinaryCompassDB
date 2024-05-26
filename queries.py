@@ -28,8 +28,13 @@ def verify_id(name: str) -> bool:
     return len(response.data) != 0
 
 # generic get statement execution; val: type of attr
-def execute_get(tablename: str, attr_name: str, val):
-    response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
+def execute_get(tablename: str, attr_name: str = None, val = None):
+    if val != None and attr_name != None:
+        response = supabase.table(tablename).select("*").eq(attr_name, val).execute()
+    elif val == None:
+        response = supabase.table(tablename).select(attr_name).execute()
+    else:
+        response = supabase.table(tablename).select("*").execute()
     return response.data
 
 def get_userid(tablename: str, username: str):
@@ -60,6 +65,3 @@ def get_day(user: str, day: str):
 def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'user_name': user, 'month': mon}).execute()
     return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
-
-
-

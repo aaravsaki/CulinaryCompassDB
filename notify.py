@@ -2,6 +2,7 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 import menu_scrape
+import queries
 # smtp is simple mail transfer protocol :)
 
 def _to_string(file: str):
@@ -21,25 +22,30 @@ def _extract_menus():
     return menus
 
 
-def send():
+def _send(emails: list[dict]):
     sender = "brandonhoang7541@gmail.com"
     password = "nhad rahl ptsc qbsz"
 
-    receiver = 'marig10058@javnoi.com'
+    receivers = emails
 
     topic = "Don't forget to eat breakfast!"
     content = _extract_menus()
 
     em = EmailMessage()
     em['From'] = sender
-    em['To'] = receiver
     em['subject'] = topic
     em.set_content(content)
 
     context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
-        smtp.login(sender, password)
-        smtp.sendmail(sender, receiver, em.as_string())
+        for receiver in receivers:
+            em['To'] = receiver['mail']
+            smtp.login(sender, password)
+            smtp.sendmail(sender, receiver['mail'], em.as_string())
 
-send()
+def main():
+    receivers = queries.execute_get("email", "mail")
+    _send(receivers)
+
+main()
