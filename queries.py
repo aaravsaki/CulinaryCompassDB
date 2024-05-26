@@ -4,7 +4,7 @@ import mail
 supabase = init.get_client()
 
 # generic insert statement execution
-def execute_insert_statement(tablename: str, columns: list[str], values: list[str]):
+def execute_insert_statement(tablename: str, columns: list[str], values: list):
     data = {col: val for col, val in zip(columns, values)}
     return supabase.table(tablename).insert(data).execute()
 
