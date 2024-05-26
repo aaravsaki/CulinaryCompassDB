@@ -111,6 +111,14 @@ class ItemDeletion(BaseModel):
     name: str
 
 
+class AllItemRequest(BaseModel):
+    user: str
+    
+
+
+
+
+
 @app.get("/verify/")
 def verify(username: str):
     return {"exists": queries.verify_id(username)}
@@ -177,8 +185,8 @@ def delete_meal(delete_request: MealDeletion):
         queries.delete_meal(MEAL_TABLE, meal_id)
 
 @app.post("/all_fooditems/")
-def get_allfooditems(user: str):
-    data = queries.get_all_fooditems(user)
+def get_allfooditems(request: AllItemRequest):
+    data = queries.get_all_fooditems(request.user)
     new_data = dict()
     for obj in data:
         name = obj["name"]
