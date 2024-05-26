@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from datetime import datetime
-
 import queries
 
 USER_TABLE = 'person'
@@ -96,6 +95,12 @@ class MealFoodAssociation(BaseModel):
 
     food_id: int
 
+class ItemDeletion(BaseModel):
+    username: str
+
+    name: str
+
+
 @app.get("/verify/")
 def verify(username: str):
     return {"exists": queries.verify_id(username)}
@@ -128,6 +133,7 @@ def create_meal(meal: Meal):
     print(user_id)
 
     for fooditem_id, occurrences in meal.frequency.items():
+
         queries.execute_insert_statement(MEALHAS_TABLE, ['meal_id', 'food_id', 'amount'], [meal_id, fooditem_id, occurrences])
         queries.execute_insert_statement(PERSONHAS_TABLE, ['food_id', 'user_id'], [fooditem_id, user_id])
 
@@ -143,6 +149,15 @@ def create_meal_food_assoc(association: MealFoodAssociation):
 def delete_user(user: User):
     queries.delete_user(USER_TABLE, user.username)
     return
+
+@app.post("/delete/fooditem/")
+def delete_fooditem(delete_request: ItemDeletion):
+    fooditem_ids = queries.get_fooditem_id(delete_request.username, delete_request.name)
+    for fooditem in fooditem_ids:
+        fooditem_id = fooditem["item_id"]
+        queries.delete_fooditem(FOODITEM_TABLE, fooditem_id)
+
+
 
 
 
