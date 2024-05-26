@@ -1,5 +1,6 @@
 import init
 import mail
+from collections import defaultdict
 
 supabase = init.get_client()
 
@@ -68,7 +69,13 @@ def get_day(user: str, day: str):
 
 def get_month(user: str, mon: int):
     response = supabase.rpc(f"get_month_schedule", {'user_name': user, 'month': mon}).execute()
-    return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
+    data = defaultdict(list)
+    for meal in response.data:
+        data[meal["date"][:meal["date"].index('T')]].append({meal["mealname"] : meal["fooditems"]})
+    return data
+    
+
+    #return {meal["mealname"] : {"date" : meal["date"][:meal["date"].index('T')], "fooditems": meal["fooditems"]} for meal in response.data}
 
 def delete_fooditem(tablename: str, fooditem_id: int):
     supabase.table(tablename).delete().eq("item_id", fooditem_id).execute()
