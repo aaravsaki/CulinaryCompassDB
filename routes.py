@@ -5,7 +5,7 @@ from datetime import datetime
 
 import queries
 
-USER_TABLE = 'user'
+USER_TABLE = 'person'
 MEAL_TABLE = 'meal'
 FOODITEM_TABLE = 'fooditem'
 HAS_TABLE = 'meal_has'
@@ -86,7 +86,7 @@ class MonthSchedule(BaseModel):
 class DaySchedule(BaseModel):
     username: str
     
-    day: str
+    day: str = Field(default=f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
 
 class MealFoodAssociation(BaseModel):
     meal_id: int
@@ -99,8 +99,8 @@ def verify(username: str):
 
 @app.post("/register/")
 def create_user(user: User):
-    queries.execute_insert_statement(USER_TABLE, ['username'], [user.username])
-    return user
+    data = user.model_dump()
+    return queries.execute_insert_statement(USER_TABLE, list(data.keys()), list(data.values()))
 
 @app.post("/month/")
 def get_month(schedule: MonthSchedule):
@@ -110,26 +110,30 @@ def get_month(schedule: MonthSchedule):
 @app.post("/day/")
 def get_day(schedule: DaySchedule):
     data = schedule.model_dump()
-    return queries.get_day(data["username"], data["month"])
+    return queries.get_day(data["username"], data["day"])
 
 @app.post("/create/food_item/")
 def create_fooditem(fooditem: FoodItem):
     data = fooditem.model_dump()
-    queries.execute_insert_statement(FOODITEM_TABLE, list(data.keys()), list(data.values()))
-    return fooditem
+    response = queries.execute_insert_statement(FOODITEM_TABLE, list(data.keys()), list(data.values()))
+    return {"item_id": response.data[0]["item_id"]}
 
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
     data = meal.model_dump()
-    queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
-    return meal
+    response = queries.execute_insert_statement(MEAL_TABLE, list(data.keys()), list(data.values()))
+    return {"meal_id": response.data[0]["meal_id"]}
 
 @app.post("/create/meal_has/")
 def create_meal_food_assoc(association: MealFoodAssociation):
     data = association.model_dump()
-    queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+    response = queries.execute_insert_statement(HAS_TABLE, list(data.keys()), list(data.values()))
+    return response
 
-
+@app.post("/delete/user/")
+def delete_user(user: User):
+    queries.delete_user(USER_TABLE, user.username)
+    return
 
 
     
