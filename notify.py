@@ -31,18 +31,18 @@ def _send(emails: list[dict]):
     topic = "Don't forget to eat breakfast!"
     content = _extract_menus()
 
-    em = EmailMessage()
-    em['From'] = sender
-    em['subject'] = topic
-    em.set_content(content)
-
     context = ssl.create_default_context()
 
+   
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
-        for receiver in receivers:
-            em['To'] = receiver['mail']
-            smtp.login(sender, password)
-            smtp.sendmail(sender, receiver['mail'], em.as_string())
+            for receiver in receivers:
+                em = EmailMessage()
+                em['From'] = sender
+                em['subject'] = topic
+                em.set_content(content)
+                em['To'] = receiver['mail']
+                smtp.login(sender, password)
+                smtp.sendmail(sender, receiver['mail'], em.as_string())
 
 def main():
     receivers = queries.execute_get("email", "mail")
