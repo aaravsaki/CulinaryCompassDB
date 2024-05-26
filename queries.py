@@ -44,7 +44,7 @@ def get_userid(tablename: str, username: str):
 
 def get_fooditem_id(user_name: str, food_name: str):
     fooditem_ids = supabase.rpc("get_item_ids", {"user_name": user_name, "food_name": food_name}).execute()
-    return fooditem_ids.data
+    return fooditem_ids.data[0]
 
 def delete_user(tablename: str, user_name: str):
     supabase.table(tablename).delete().eq('username', user_name).execute()
@@ -94,5 +94,6 @@ def get_meal_ids(date: str, meal_name: str, username: str):
 
 def get_all_fooditems(username: str):
     return supabase.rpc("all_fooditems", {'user_name': username}).execute()
+
 
 
