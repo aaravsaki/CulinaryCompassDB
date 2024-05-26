@@ -95,6 +95,8 @@ class MealFoodAssociation(BaseModel):
 
     food_id: int
 
+class Email(BaseModel):
+    mail: str
 
 class MealDeletion(BaseModel):
     username: str
@@ -150,6 +152,10 @@ def create_meal_food_assoc(association: MealFoodAssociation):
     data = association.model_dump()
     response = queries.execute_insert_statement(MEALHAS_TABLE, list(data.keys()), list(data.values()))
     return response
+
+@app.post("/create/email/")
+def create_email(io_mail: Email):
+    queries.insert_email("404", io_mail)
 
 @app.post("/delete/user/")
 def delete_user(user: User):
