@@ -5,7 +5,7 @@ from datetime import datetime
 
 import queries
 
-USER_TABLE = 'user'
+USER_TABLE = 'person'
 MEAL_TABLE = 'meal'
 FOODITEM_TABLE = 'fooditem'
 HAS_TABLE = 'meal_has'
@@ -99,8 +99,8 @@ def verify(username: str):
 
 @app.post("/register/")
 def create_user(user: User):
-    queries.execute_insert_statement(USER_TABLE, ['username'], [user.username])
-    return user
+    data = user.model_dump()
+    return queries.execute_insert_statement(USER_TABLE, list(data.keys()), list(data.values()))
 
 @app.post("/month/")
 def get_month(schedule: MonthSchedule):
