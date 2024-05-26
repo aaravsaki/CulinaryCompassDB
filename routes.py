@@ -79,7 +79,7 @@ class Meal(BaseModel):
 
     username: str
 
-    date: datetime
+    date: str
 
 class MonthSchedule(BaseModel):
     username: str
@@ -123,7 +123,7 @@ def create_fooditem(fooditem: FoodItem):
 
 @app.post("/create/meal/")
 def create_meal(meal: Meal):
-    meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date'], [meal.name, meal.date])[0]["meal_id"]
+    meal_id = queries.execute_insert_statement(MEAL_TABLE, ['name', 'date'], [meal.name, meal.date]).data[0]["meal_id"]
     user_id = queries.get_userid(USER_TABLE, meal.username)
 
     for fooditem_id, occurrences in meal.frequency.items():
